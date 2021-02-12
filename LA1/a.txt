@@ -1,0 +1,90 @@
+ [[3. 0. 4. 2.]
+ [5. 6. 7. 3.]
+ [0. 0. 4. 1.]
+ [8. 0. 0. 5.]
+ [0. 0. 0. 4.]]
+[[0, 0], [1, 1], [2, 2]]
+
+import numpy as np
+np.set_printoptions(linewidth=300)
+str = input("Enter number of rows and columns Respectively:\n")
+rc = str.split()
+row_num = int(rc[0])
+col_num = int(rc[1])
+# print(column, row)
+
+# matrix = np.zeros([row_num, col_num])
+# const_val = np.zeros(row_num)
+matrix = np.array([[0, 6, 82, 0, 30, 0, 0],
+                   [17, 20, 8, 11, 45, 34, 19],
+                   [34, 40, 16, 22, 90, 68, 28],
+                   [0, 19, 90, 9, 12, 0, 23],
+                   [14, 16, 45, 0, 0, 0, 21],
+                   [0, 6, 82, 0, 30, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0]])
+#print(const_val.reshape(row, 1))
+# i = 0
+# while i<row_num:
+#     str = input("Enter row{}:\n".format(i+1))
+#     tmp = str.split()
+#     if tmp.__len__() != col_num:
+#         print("You have entered Wrong number of elements for this row, please try again")
+#         i = i-1
+#     matrix[i] = matrix[i] + list(map(float, tmp))
+#     i += 1
+# str = input("Enter constant values:\n")
+str = "11 5 6 7 9 20 8"
+const_val = str.split()
+const_val = np.array(list(map(float, const_val)))
+#print(const_val.reshape(row_num, 1))
+matrix = np.hstack((matrix, const_val.reshape(-1, 1)))
+#print(matrix)
+pps = []
+val = row_num-1
+# result = np.all((matrix == 0), axis=1)
+for r in range(row_num):
+    row = matrix[r]
+    c = 0
+    count = 0
+    while c < col_num and val > r:
+        if row[c] == 0:
+            count += 1
+        if count == col_num:
+            matrix[[r, val]] = matrix[[val, r]]
+            val -= 1
+        c += 1
+    # print("---\n", matrix)
+
+val = 0 # top row of matrix in each iteration
+for c in range(0, col_num):
+    column = matrix[:, c]
+    r = val
+    flag = False
+    while r < row_num and val < row_num:
+        if column[r] != 0:
+            if r > val:
+                matrix[[val, r]] = matrix[[r, val]]
+            pps.append([val, c])
+            val += 1
+            flag = True
+            break
+        r += 1
+
+    if flag:
+        for i in range(val, row_num):
+            matrix[i] += matrix[val-1]*(-matrix[i, c]/matrix[val-1, c])
+            for j in range(0, col_num+1):
+                matrix[i, j] = round(matrix[i, j], 2)
+    # print("---\n", np.matrix(matrix))
+length = len(pps)
+for c in range(length):
+    pp = pps[length-1]
+
+    matrix[pp[0]] = matrix[pp[0]] / matrix[pp[0], pp[1]]
+    for i in range(0, pp[0]):
+        matrix[i] += -1 * matrix[pp[0]] * matrix[i, pp[1]]
+        for j in range(0, col_num + 1):
+            matrix[i, j] = round(matrix[i, j], 2)
+    length -= 1
+print(pps)
+print(matrix)
